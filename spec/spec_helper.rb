@@ -44,6 +44,12 @@ ActiveRecord::Schema.define do
     t.string :country
     t.timestamps
   end
+
+  create_table :comments, force: true do |t|
+    t.string :comment
+    t.references :commentable, polymorphic: true
+    t.timestamps
+  end
 end
 
 class User < ActiveRecord::Base
@@ -58,6 +64,7 @@ end
 class Post < ActiveRecord::Base
   belongs_to :user
   has_and_belongs_to_many :tags
+  has_many :comments, as: :commentable
 
   validates :title, presence: true
 end
@@ -65,6 +72,7 @@ end
 class Profile < ActiveRecord::Base
   belongs_to :user
   has_one :address
+  has_one :comment, as: :commentable
 
   validates :bio, presence: true
 end
@@ -79,6 +87,10 @@ class Address < ActiveRecord::Base
   belongs_to :profile
 
   validates :city, :country, presence: true
+end
+
+class Comment < ActiveRecord::Base
+  belongs_to :commentable, polymorphic: true
 end
 
 RSpec.configure do |config|
