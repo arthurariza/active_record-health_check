@@ -81,5 +81,16 @@ RSpec.describe ModelHealthCheck::Check do
         )
       end
     end
+
+    context "when belongs_to association is invalid" do
+      it "returns an array of hashes with the belongs_to association errors" do
+        post.user.update_columns(email: nil)
+
+        expect(described_class.new(post).call).to eq(
+          [{ class: "User", id: user.id,
+             error_messages: "Email can't be blank" }]
+        )
+      end
+    end
   end
 end
