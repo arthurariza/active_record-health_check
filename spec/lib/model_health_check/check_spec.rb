@@ -11,6 +11,8 @@ RSpec.describe ModelHealthCheck::Check do
     let(:ruby_tag) { Tag.create!(name: "Ruby") }
     let(:rails_tag) { Tag.create!(name: "Rails") }
     let(:address) { Address.create!(city: "Tokyo", country: "Japan", profile: profile) }
+    let(:profile_comment) { Comment.create!(comment: "Comment", commentable: profile) }
+    let(:post_comment) { Comment.create!(comment: "Comment", commentable: post) }
 
     context "when original model is invalid" do
       it "returns an array of hashes with the original model errors" do
@@ -89,6 +91,26 @@ RSpec.describe ModelHealthCheck::Check do
         expect(described_class.new(post).call).to eq(
           [{ class: "User", id: user.id,
              error_messages: "Email can't be blank" }]
+        )
+      end
+    end
+
+    context "when polymorphic has_one association is invalid" do
+      it "returns an array of hashes with the has_one association errors" do
+        profile_comment.update_columns(comment: nil)
+
+        expect(described_class.new(profile).call).to eq(
+          [{ class: "Comment", id: profile_comment.id, error_messages: "Comment can't be blank" }]
+        )
+      end
+    end
+
+    context "when polymorphic has_many association is invalid" do
+      it "returns an array of hashes with the has_many association errors" do
+        post_comment.update_columns(comment: nil)
+
+        expect(described_class.new(post).call).to eq(
+          [{ class: "Comment", id: post_comment.id, error_messages: "Comment can't be blank" }]
         )
       end
     end
