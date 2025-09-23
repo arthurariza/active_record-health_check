@@ -40,7 +40,6 @@ ActiveRecord::Schema.define do
 
   create_table :addresses, force: true do |t|
     t.belongs_to :profile
-    t.string :street
     t.string :city
     t.string :country
     t.timestamps
@@ -79,7 +78,7 @@ end
 class Address < ActiveRecord::Base
   belongs_to :profile
 
-  validates :street, :city, :country, presence: true
+  validates :city, :country, presence: true
 end
 
 RSpec.configure do |config|

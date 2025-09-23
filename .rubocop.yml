@@ -6,3 +6,11 @@ Style/StringLiterals:
 
 Style/StringLiteralsInInterpolation:
   EnforcedStyle: double_quotes
+
+Metrics/ClassLength:
+  Exclude:
+    - "spec/**/*/"
+
+Metrics/BlockLength:
+  Exclude:
+    - "spec/**/*/"
