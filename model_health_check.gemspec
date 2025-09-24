@@ -1,10 +1,10 @@
 # frozen_string_literal: true
 
-require_relative "lib/model_health_check/version"
+require_relative "lib/active_record/health_check/version"
 
 Gem::Specification.new do |spec|
-  spec.name = "model_health_check"
-  spec.version = ModelHealthCheck::VERSION
+  spec.name = "active_record-health_check"
+  spec.version = ActiveRecord::HealthCheck::VERSION
   spec.authors = ["Arthur Ariza"]
   spec.email = ["arthur.aariza@gmail.com"]
 

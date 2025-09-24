@@ -1,9 +1,9 @@
 # frozen_string_literal: true
 
-require "./lib/model_health_check/result"
+require "./lib/active_record/health_check/result"
 require "spec_helper"
 
-RSpec.describe ModelHealthCheck::Result do
+RSpec.describe ActiveRecord::HealthCheck::Result do
   describe ".create" do
     it "creates the result and returns the result as a hash" do
       expect(

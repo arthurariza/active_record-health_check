@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require "model_health_check"
+require "active_record/health_check"
 require "active_record"
 require "sqlite3"
 

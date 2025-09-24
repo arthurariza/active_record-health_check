@@ -1,9 +1,8 @@
 # frozen_string_literal: true
 
-require_relative "../../spec_helper"
-require "./lib/model_health_check/check"
+require "./lib/active_record/health_check/check"
 
-RSpec.describe ModelHealthCheck::Check do
+RSpec.describe ActiveRecord::HealthCheck::Check do
   describe "#call" do
     let(:user) { User.create!(name: "User One", email: "user_one@gmail.com") }
     let(:post) { Post.create!(title: "Title", user: user) }

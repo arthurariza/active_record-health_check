@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    model_health_check (0.1.0)
+    active_record-health_check (0.1.0)
       rails (>= 6.0)
 
 GEM
@@ -262,8 +262,8 @@ PLATFORMS
   x86_64-linux-musl
 
 DEPENDENCIES
+  active_record-health_check!
   irb
-  model_health_check!
   rake (~> 13.0)
   rspec (~> 3.0)
   rubocop (~> 1.21)
