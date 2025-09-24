@@ -113,5 +113,29 @@ RSpec.describe ActiveRecord::HealthCheck::Check do
         )
       end
     end
+
+    context "when skips is specified" do
+      it "returns an array of hashes without the skipped associations" do
+        profile.update_columns(bio: nil)
+        post.update_columns(title: nil)
+
+        expect(described_class.new(user, skips: [:profile]).call).to eq(
+          [{ class: "Post", error_messages: "Title can't be blank", id: post.id }]
+        )
+      end
+
+      it "works with an array strings or symbols" do
+        profile.update_columns(bio: nil)
+        post.update_columns(title: nil)
+
+        expect(described_class.new(user, skips: [:profile]).call).to eq(
+          [{ class: "Post", error_messages: "Title can't be blank", id: post.id }]
+        )
+
+        expect(described_class.new(user, skips: ["profile"]).call).to eq(
+          [{ class: "Post", error_messages: "Title can't be blank", id: post.id }]
+        )
+      end
+    end
   end
 end

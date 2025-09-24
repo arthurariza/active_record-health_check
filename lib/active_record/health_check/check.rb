@@ -1,13 +1,14 @@
 # frozen_string_literal: true
 
 require_relative "result"
+require_relative "skips"
 
 module ActiveRecord
   module HealthCheck
     class Check
       def initialize(model, skips: [], collection_result: [], result: Result)
         @model = model
-        @skips = skips
+        @skips = Skips.parse(skips)
         @collection_result = collection_result
         @result = result
       end
@@ -50,7 +51,7 @@ module ActiveRecord
       end
 
       def check_collection_proxy(association)
-        association.each do |collection|
+        association.find_each do |collection|
           next if collection.valid?
 
           @collection_result << @result.create(klass: collection.class.name,
