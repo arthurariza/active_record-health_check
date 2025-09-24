@@ -13,7 +13,7 @@ module ActiveRecord
         @result = result
       end
 
-      def call
+      def check
         check_model
 
         check_associations
