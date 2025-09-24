@@ -13,16 +13,16 @@ module ActiveRecord
       end
 
       def call
-        validate_model
+        check_model
 
-        validate_associations
+        check_associations
 
         @collection_result
       end
 
       private
 
-      def validate_model
+      def check_model
         return if @model.valid?
 
         @collection_result << @result.create(klass: @model.class.name,
@@ -30,28 +30,26 @@ module ActiveRecord
                                              error_messages: @model.errors.full_messages.to_sentence)
       end
 
-      def validate_associations
+      def check_associations
         association_keys.each do |key|
           association = @model.try(key.to_sym)
 
           next if association.nil?
 
-          validation_factory(association)
+          check_factory(association)
         end
       end
 
-      def validation_factory(association)
+      def check_factory(association)
         case association
         when ActiveRecord::Associations::CollectionProxy
-          validate_collection_proxy(association)
+          check_collection_proxy(association)
         when ActiveRecord::Base
-          validate_single_record(association)
-        else
-          validate_unknown(association)
+          check_base_record(association)
         end
       end
 
-      def validate_collection_proxy(association)
+      def check_collection_proxy(association)
         association.each do |collection|
           next if collection.valid?
 
@@ -61,18 +59,12 @@ module ActiveRecord
         end
       end
 
-      def validate_single_record(association)
+      def check_base_record(association)
         return if association.valid?
 
         @collection_result << @result.create(klass: association.class.name,
                                              id: association.id,
                                              error_messages: association.errors.full_messages.to_sentence)
-      end
-
-      def validate_unknown(association)
-        @collection_result << @result.create(klass: association.class.name,
-                                             id: association.id,
-                                             error_messages: "Unexpected association type: #{association.class.name}")
       end
 
       def association_keys
