@@ -89,7 +89,7 @@ user.health_check
 
 ## Requirements
 
-- Ruby >= 3.2.0
+- Ruby >= 2.7.0
 - Rails >= 6.0
 
 ## License
