@@ -9,7 +9,7 @@ This is useful for catching invalid records that might otherwise go unnoticed. F
 Add the gem to your Gemfile:
 
 ```ruby
-gem "active_record-health_check", git: "https://github.com/arthurariza/active_record-health_check"
+gem "active_record-health_check"
 ```
 
 Then run:
