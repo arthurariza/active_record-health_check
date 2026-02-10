@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    active_record-health_check (0.1.0)
+    active_record-health_check (0.1.1)
       rails (>= 6.0)
 
 GEM
