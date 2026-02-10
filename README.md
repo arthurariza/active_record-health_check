@@ -1,38 +1,96 @@
 # ActiveRecord::HealthCheck
 
-TODO: Delete this and the text below, and describe your gem
+Validate an ActiveRecord model **and all its associations** in one call. ActiveRecord::HealthCheck walks your object graph recursively and returns a list of every validation error it finds -- even errors buried deep in nested associations.
 
-Welcome to your new gem! In this directory, you'll find the files you need to be able to package up your Ruby library into a gem. Put your Ruby code in the file `lib/active_record-health_check`. To experiment with that code, run `bin/console` for an interactive prompt.
+This is useful for catching invalid records that might otherwise go unnoticed. For example, a `User` might be valid, but one of their `Post`s could have a blank title, or a `Tag` on that post could be missing its name. `health_check` will find all of those problems at once.
 
 ## Installation
 
-TODO: Replace `UPDATE_WITH_YOUR_GEM_NAME_IMMEDIATELY_AFTER_RELEASE_TO_RUBYGEMS_ORG` with your gem name right after releasing it to RubyGems.org. Please do not do it earlier due to security reasons. Alternatively, replace this section with instructions to install your gem from git if you don't plan to release to RubyGems.org.
+Add the gem to your Gemfile:
 
-Install the gem and add to the application's Gemfile by executing:
-
-```bash
-bundle add UPDATE_WITH_YOUR_GEM_NAME_IMMEDIATELY_AFTER_RELEASE_TO_RUBYGEMS_ORG
+```ruby
+gem "active_record-health_check", git: "https://github.com/arthurariza/active_record-health_check"
 ```
 
-If bundler is not being used to manage dependencies, install the gem by executing:
+Then run:
 
 ```bash
-gem install UPDATE_WITH_YOUR_GEM_NAME_IMMEDIATELY_AFTER_RELEASE_TO_RUBYGEMS_ORG
+bundle install
 ```
 
 ## Usage
 
-TODO: Write usage instructions here
+### Rails (automatic setup)
 
-## Development
+In a Rails application, **no configuration is needed**. The gem includes a Railtie that automatically adds a `health_check` method to every ActiveRecord model.
 
-After checking out the repo, run `bin/setup` to install dependencies. Then, run `rake spec` to run the tests. You can also run `bin/console` for an interactive prompt that will allow you to experiment.
+```ruby
+user = User.find(1)
+user.health_check
+# => []
+# An empty array means everything is valid!
+```
 
-To install this gem onto your local machine, run `bundle exec rake install`. To release a new version, update the version number in `version.rb`, and then run `bundle exec rake release`, which will create a git tag for the version, push git commits and the created tag, and push the `.gem` file to [rubygems.org](https://rubygems.org).
+If there are validation errors, you get back an array of hashes describing each problem:
 
-## Contributing
+```ruby
+user.health_check
+# => [{ class: "Post", id: 12, error_messages: "Title can't be blank" }]
+```
 
-Bug reports and pull requests are welcome on GitHub at https://github.com/arthurariza/active_record-health_check.
+### Skipping associations
+
+Sometimes you want to skip certain associations. Pass them with the `skips:` parameter:
+
+```ruby
+user.health_check(skips: [:posts])
+```
+
+This will check the user and all their associations **except** `posts`. You can pass symbols or strings:
+
+```ruby
+user.health_check(skips: ["posts", "profile"])
+```
+
+## What it checks
+
+ActiveRecord::HealthCheck traverses all of a model's associations. Supported association types:
+
+- `has_many`
+- `has_one`
+- `belongs_to`
+- `has_and_belongs_to_many`
+- `has_many :through`
+- `has_one :through`
+- Polymorphic associations (`has_many :comments, as: :commentable`)
+
+## Return value
+
+`health_check` returns an **array of hashes**. Each hash represents one invalid record and has three keys:
+
+| Key               | Type    | Description                                          |
+| ----------------- | ------- | ---------------------------------------------------- |
+| `:class`          | String  | The class name of the invalid record (e.g. `"Post"`) |
+| `:id`             | Integer | The database ID of the invalid record                |
+| `:error_messages` | String  | A human-readable sentence of all validation errors   |
+
+When everything is valid, you get an empty array (`[]`).
+
+Here is an example with multiple errors:
+
+```ruby
+user.health_check
+# => [
+#   { class: "Post", id: 3, error_messages: "Title can't be blank" },
+#   { class: "Tag", id: 7, error_messages: "Name can't be blank" },
+#   { class: "Profile", id: 1, error_messages: "Bio can't be blank" }
+# ]
+```
+
+## Requirements
+
+- Ruby >= 3.2.0
+- Rails >= 6.0
 
 ## License
 
